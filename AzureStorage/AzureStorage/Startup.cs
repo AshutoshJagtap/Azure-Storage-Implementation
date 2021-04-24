@@ -1,3 +1,5 @@
+using AzureStorage.Contract;
+using AzureStorage.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,6 +26,7 @@ namespace AzureStorage
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddTransient<IBlobStorageRepository, BlobStorageRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
