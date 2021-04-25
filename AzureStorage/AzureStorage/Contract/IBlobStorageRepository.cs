@@ -6,6 +6,6 @@ namespace AzureStorage.Contract
 {
     public interface IBlobStorageRepository
     {
-        Task UploadBlobAsync(IFormFile blob, FileStream blobStream, string fileName, string title, string description);  
+        Task UploadBlobAsync(IFormFile blobFile, string title, string description);  
     }
 }

@@ -26,17 +26,10 @@ namespace AzureStorage.Controllers
         }
 
         [HttpPost("UploadBlob")]
-        public async Task<IActionResult> UploadBlob(IFormFile blob, string title, string description)
+        public async Task<IActionResult> UploadBlob(IFormFile blobFile, string title, string description)
         {
-            if (blob.Length > 0)
-            {
-                // full path to file in temp location
-                var filePath = Path.GetTempFileName(); //we are using Temp file name just for the example. Add your own file path.
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await _blobStorageRepository.UploadBlobAsync(blob,stream, blob.FileName, title, description);
-                }
-            }
+            await _blobStorageRepository.UploadBlobAsync(blobFile, title, description);
+            
             return Ok();
         }
     }
