@@ -1,8 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using AzureStorage.Contract;
-using AzureStorage.Extention;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -17,27 +16,38 @@ namespace AzureStorage.Service
             _connectionString = configuration["BlobStorage:ConnectionString"];
             _containerName = configuration["BlobStorage:ContainerName"];
         }
-        public async Task UploadBlobAsync(Stream blobStream, string fileName, string title, string description)
+        public async Task UploadBlobAsync(IFormFile blobFile, FileStream blobStream, string fileName, string title, string description)
         {
             // Create a BlobServiceClient object which will be used to create a container client
             BlobServiceClient blobServiceClient = new BlobServiceClient(_connectionString);
 
-            // Create the container and return a container client object
-
+            // Create the container client object
             BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(_containerName);
 
+            //Create the container if not exists
             await blobContainerClient.CreateIfNotExistsAsync();
-            // Get a reference to a blob
+
+            // Get a reference of blob
             BlobClient blobClient = blobContainerClient.GetBlobClient(fileName);
 
-            //Set a metadata to a blob
-            //await blobClient.SetMetadataAsync(title, description);
+            if (!blobClient.Exists())
+            {
+                //Copy stream to temp file
+                await blobFile.CopyToAsync(blobStream);
 
-            //Upload blob data to Blob Storage
-            blobStream.Position = 0;
-            await blobClient.UploadAsync(blobStream);
+                //Set a metadata to a blob
+                //await blobClient.SetMetadataAsync(title, description);
 
+                //Upload blob data to Blob Storage
+                blobStream.Position = 0;
+                await blobClient.UploadAsync(blobStream);
+
+                //Delete temp file
+                if (File.Exists(blobStream.Name))
+                {
+                    File.Delete(blobStream.Name);
+                }
+            }
         }
-
     }
 }

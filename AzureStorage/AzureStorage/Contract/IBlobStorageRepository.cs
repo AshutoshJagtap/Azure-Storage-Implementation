@@ -1,14 +1,11 @@
-﻿using Azure.Storage.Blobs;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AzureStorage.Contract
 {
     public interface IBlobStorageRepository
     {
-        Task UploadBlobAsync(Stream blobStream, string fileName, string title, string description);  
+        Task UploadBlobAsync(IFormFile blob, FileStream blobStream, string fileName, string title, string description);  
     }
 }
